@@ -1,25 +1,27 @@
 ---
-- name: Metrics RPi
-  hosts: 192.168.0.72
+- name: Gather and Evaluate Metrics RPi 
+  hosts: rick-prime
   gather_facts: true
   vars:
     ansible_user: rsanchez
 
   tasks:
-    - name: Collect CPU usage
-      shell: "top -bn1 | grep 'Cpu(s)' | awk '{print $2 + $4}'"
-      register: cpu_usage
+    - name: Collect Resource Usage for Raspberry Pi
+      block:
+        - name: Collect CPU usage
+          ansible.builtin.shell: "top -bn1 | grep 'Cpu(s)' | awk '{print $2 + $4}'"
+          register: cpu_usage
 
-    - name: Collect memory usage
-      shell: "free | grep Mem | awk '{print $3/$2 * 100.0}'"
-      register: mem_usage
+        - name: Collect memory usage
+          ansible.builtin.shell: "free | grep Mem | awk '{print $3/$2 * 100.0}'"
+          register: mem_usage
 
-    - name: Collect disk usage
-      shell: "df -h / | grep / | awk '{ print $5 }' | sed 's/%//g'"
-      register: disk_usage
+        - name: Collect disk usage
+          ansible.builtin.shell: "df -h / | grep / | awk '{ print $5 }' | sed 's/%//g'"
+          register: disk_usage
 
     - name: Save metrics to file
-      copy:
+      ansible.builtin.copy:
         content: |
           {
             "cpu_usage": "{{ cpu_usage.stdout }}",
@@ -28,15 +30,16 @@
           }
         dest: /tmp/metrics.json
         remote_src: false
+        mode: '0744'
       delegate_to: localhost
 
     - name: Execute Robot Framework Test
-      shell: "robot -d /tmp/robot_results /media/ewilson/Repositories/ansible/rpi_resources.robot"
+      ansible.builtin.shell: "robot -d /tmp/robot_results /media/ewilson/Repositories/ansible/rpi_resources.robot"
       args:
         chdir: /tmp
       register: robot_output
       delegate_to: localhost
 
     - name: Display Robot Framework Result
-      debug:
-        var: robot_output
+      ansible.builtin.debug:
+        var: robot_output.stdout_lines
