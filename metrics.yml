@@ -30,11 +30,6 @@
           }
       register: metrics
 
-    - name: Save metrics to File
-      ansible.builtin.copy:
-        content: "{{ metrics }}"
-        dest: /tmp/metrics.json
-
 - name: Execute Robot Framework Test in Remote environment
   hosts: manila-john
   gather_facts: false
