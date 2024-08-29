@@ -33,8 +33,6 @@
 - name: Execute Robot Framework Test in Remote environment
   hosts: manila-john
   gather_facts: false
-  vars:
-    ansible_user: ewilson
 
   tasks:
     - name: Copy Robot Framework Test to Remote Host
