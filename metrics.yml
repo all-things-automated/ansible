@@ -40,8 +40,7 @@
     - name: Copy Robot Framework Test to Remote Host
       ansible.builtin.copy:
         src: rpi_resources.robot
-        dest: /tmp/
-        remote_src: false
+        dest: /media/ewilson/development
         mode: '0744'
       delegate_to: localhost
 
