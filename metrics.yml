@@ -40,7 +40,6 @@
         src: rpi_resources.robot
         dest: /media/ewilson/development
         mode: '0744'
-      delegate_to: localhost
 
     - name: Save metrics to File
       ansible.builtin.copy:
