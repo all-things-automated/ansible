@@ -48,6 +48,7 @@
       ansible.builtin.copy:
         content: "{{ metrics }}"
         dest: /tmp/metrics.json
+        mode: '0744'
 
     - name: Copy Robot Framework Test to Remote Host
       ansible.builtin.copy:
