@@ -22,7 +22,7 @@
 
     - name: Save metrics to Variable
       ansible.builtin.debug:
-        content: |
+        msg: |
           {
             "cpu_usage": "{{ cpu_usage.stdout }}",
             "mem_usage": "{{ mem_usage.stdout }}",
