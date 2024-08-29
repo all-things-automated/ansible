@@ -1,4 +1,3 @@
----
 - name: Metrics RPi
   hosts: rick-prime
   gather_facts: true
@@ -20,49 +19,40 @@
           ansible.builtin.shell: "df -h / | grep / | awk '{ print $5 }' | sed 's/%//g'"
           register: disk_usage
 
-    - name: Save metrics to Variable
-      ansible.builtin.debug:
-        msg: |
+    - name: Save metrics to JSON file
+      ansible.builtin.copy:
+        content: |
           {
             "cpu_usage": "{{ cpu_usage.stdout }}",
             "mem_usage": "{{ mem_usage.stdout }}",
             "disk_usage": "{{ disk_usage.stdout }}"
           }
-      register: metrics
+        dest: /tmp/metrics.json
+        mode: '0t44'
 
 - name: Execute Robot Framework Test in Remote environment
   hosts: manila-john
   gather_facts: false
 
   tasks:
+    - name: Copy metrics file from rick-prime to manila-john
+      ansible.builtin.fetch:
+        src: /tmp/metrics.json
+        dest: /tmp/metrics.json
+        flat: true
+      delegate_to: rick-prime
+
     - name: Copy Robot Framework Test to Remote Host
       ansible.builtin.copy:
         src: rpi_resources.robot
         dest: /tmp/
         mode: '0744'
 
-    - name: Save metrics to File
-      ansible.builtin.copy:
-        content: "{{ metrics }}"
-        dest: /tmp/metrics.json
-        mode: '0744'
-
     - name: Execute Robot Framework Test
       ansible.builtin.shell: "robot -d /tmp/robot_results /tmp/rpi_resources.robot"
       args:
         chdir: /tmp
       register: robot_output
-
-    - name: Display Robot Framework Result
-      ansible.builtin.debug:
-        var: robot_output.stdout_lines
-
-    - name: Execute Robot Framework Test
-      ansible.builtin.shell: "robot -d /tmp/robot_results /tmp/rpi_resources.robot"
-      args:
-        chdir: /tmp
-      register: robot_output
-      delegate_to: localhost
 
     - name: Display Robot Framework Result
       ansible.builtin.debug:
