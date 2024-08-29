@@ -1,11 +1,13 @@
 - name: Metrics RPi
-  hosts: rick-prime
+  hosts: all
   gather_facts: true
+  become: true
   vars:
-    ansible_user: adminuser
+    ansible_user: ewilson
 
   tasks:
     - name: Collect Resource Usage for Raspberry Pi
+      when: metrics is not defined
       block:
         - name: Collect CPU usage
           ansible.builtin.shell: "top -bn1 | grep 'Cpu(s)' | awk '{print $2 + $4}'"
@@ -20,44 +22,80 @@
           register: disk_usage
 
     - name: Save metrics to JSON file
-      ansible.builtin.copy:
-        content: |
+      ansible.builtin.set_fact:
+        metrics: 
           {
             "cpu_usage": "{{ cpu_usage.stdout }}",
             "mem_usage": "{{ mem_usage.stdout }}",
             "disk_usage": "{{ disk_usage.stdout }}"
           }
-        dest: /tmp/metrics.json
-        mode: '1744'
+        dest: "/tmp/{{ inventory_hostname }}-metrics.json"
+        mode: '0744'
+      delegate_to: manila-john
+
+    - debug:
+        var: metrics
+
+    - name: Make JSON file
+      ansible.builtin.copy:
+        content: "{{ metrics | to_nice_json }}"
+        dest: "/tmp/robot/{{ inventory_hostname }}-metrics.json"
+        mode: '0744'
+      delegate_to: manila-john
+
+    - name: Generate Robot Framework Test Cases
+      ansible.builtin.template:
+        src: rpi_resources.robot.j2
+        dest: "/tmp/robot/{{ inventory_hostname }}-rpi_resources.robot"
+        mode: '0744'
+      delegate_to: manila-john
+      register: template_result
+
 
 - name: Execute Robot Framework Test in Remote environment
   hosts: manila-john
   gather_facts: false
+  become: true
   vars:
-    ansible_user: adminuser
+    ansible_user: ewilson
 
   tasks:
-    - name: Copy metrics file from rick-prime to manila-john
-      ansible.builtin.fetch:
-        src: /tmp/metrics.json
-        dest: /tmp/metrics.json
-        flat: true
-      delegate_to: rick-prime
-      vars:
-        ansible_user: rsanchez
+    - name: Ensure Robot Framework is installed
+      ansible.builtin.pip:
+        name: robotframework
+        state: present
+        executable: /usr/bin/pip3
 
-    - name: Copy Robot Framework Test to Remote Host
+    - name: Install Robot Framework and JSONLibrary
+      ansible.builtin.pip:
+        name:
+          - robotframework
+          - robotframework-jsonlibrary
+        state: present
+
+    - name: Copy robo-test.py to manila-john
       ansible.builtin.copy:
-        src: rpi_resources.robot
+        src: robo-test.py
         dest: /tmp/
-        mode: '0744'
+        mode: '0777'
 
-    - name: Execute Robot Framework Test
-      ansible.builtin.shell: "robot -d /tmp/robot_results /tmp/rpi_resources.robot"
-      args:
-        chdir: /tmp
+    - name: Run a script using an executable in a system path
+      ansible.builtin.script:
+        cmd: robo-test.py
+        chdir: /tmp/robot
       register: robot_output
 
     - name: Display Robot Framework Result
       ansible.builtin.debug:
         var: robot_output.stdout_lines
+
+    - name: Clean up /tmp/robot directory
+      ansible.builtin.file:
+        name: /tmp/robot/*
+        state: absent
+      register: cleanup_result
+
+    - name: Display Cleanup Result
+      ansible.builtin.debug:
+        var: cleanup_result
+

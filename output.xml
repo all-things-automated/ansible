@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.0.1 (Python 3.10.12 on linux)" generated="2024-08-29T14:16:15.188458" rpa="false" schemaversion="5">
+<suite id="s1" name="Rpi Resources" source="/media/ewilson/Repositories/ansible/rpi_resources.robot">
+<test id="s1-t1" name="Verify CPU Usage" line="12">
+<kw name="Load Json From File" owner="JSONLibrary">
+<msg time="2024-08-29T14:16:15.263033" level="ERROR">JSON file: /root/snap/semaphore/common/repositories/metrics.json not found</msg>
+<msg time="2024-08-29T14:16:15.263169" level="FAIL">OSError</msg>
+<var>${metrics}</var>
+<arg>/root/snap/semaphore/common/repositories/metrics.json</arg>
+<doc>Load JSON from file.</doc>
+<status status="FAIL" start="2024-08-29T14:16:15.262866" elapsed="0.000493">OSError</status>
+</kw>
+<kw name="Get From Dictionary" owner="Collections">
+<var>${cpu_usage}</var>
+<arg>${metrics}</arg>
+<arg>cpu_usage</arg>
+<doc>Returns a value from the given ``dictionary`` based on the given ``key``.</doc>
+<status status="NOT RUN" start="2024-08-29T14:16:15.263483" elapsed="0.000019"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>CPU Usage: ${cpu_usage}%</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2024-08-29T14:16:15.263594" elapsed="0.000016"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${cpu_usage} &lt; ${THRESHOLD_CPU}</arg>
+<arg>msg=CPU usage is too high: ${cpu_usage}%</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="NOT RUN" start="2024-08-29T14:16:15.263686" elapsed="0.000015"/>
+</kw>
+<doc>Ensure CPU usage is below the defined threshold.</doc>
+<status status="FAIL" start="2024-08-29T14:16:15.262209" elapsed="0.001629">OSError</status>
+</test>
+<test id="s1-t2" name="Verify Memory Usage" line="19">
+<kw name="Load Json From File" owner="JSONLibrary">
+<msg time="2024-08-29T14:16:15.264386" level="ERROR">JSON file: /root/snap/semaphore/common/repositories/metrics.json not found</msg>
+<msg time="2024-08-29T14:16:15.264482" level="FAIL">OSError</msg>
+<var>${metrics}</var>
+<arg>/root/snap/semaphore/common/repositories/metrics.json</arg>
+<doc>Load JSON from file.</doc>
+<status status="FAIL" start="2024-08-29T14:16:15.264287" elapsed="0.000271">OSError</status>
+</kw>
+<kw name="Get From Dictionary" owner="Collections">
+<var>${mem_usage}</var>
+<arg>${metrics}</arg>
+<arg>mem_usage</arg>
+<doc>Returns a value from the given ``dictionary`` based on the given ``key``.</doc>
+<status status="NOT RUN" start="2024-08-29T14:16:15.264668" elapsed="0.000016"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>Memory Usage: ${mem_usage}%</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2024-08-29T14:16:15.264771" elapsed="0.000015"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${mem_usage} &lt; ${THRESHOLD_MEM}</arg>
+<arg>msg=Memory usage is too high: ${mem_usage}%</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="NOT RUN" start="2024-08-29T14:16:15.264929" elapsed="0.000015"/>
+</kw>
+<doc>Ensure Memory usage is below the defined threshold.</doc>
+<status status="FAIL" start="2024-08-29T14:16:15.264016" elapsed="0.001037">OSError</status>
+</test>
+<test id="s1-t3" name="Verify Disk Usage" line="26">
+<kw name="Load Json From File" owner="JSONLibrary">
+<msg time="2024-08-29T14:16:15.265548" level="ERROR">JSON file: /root/snap/semaphore/common/repositories/metrics.json not found</msg>
+<msg time="2024-08-29T14:16:15.265640" level="FAIL">OSError</msg>
+<var>${metrics}</var>
+<arg>/root/snap/semaphore/common/repositories/metrics.json</arg>
+<doc>Load JSON from file.</doc>
+<status status="FAIL" start="2024-08-29T14:16:15.265435" elapsed="0.000274">OSError</status>
+</kw>
+<kw name="Get From Dictionary" owner="Collections">
+<var>${disk_usage}</var>
+<arg>${metrics}</arg>
+<arg>disk_usage</arg>
+<doc>Returns a value from the given ``dictionary`` based on the given ``key``.</doc>
+<status status="NOT RUN" start="2024-08-29T14:16:15.265807" elapsed="0.000015"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>Disk Usage: ${disk_usage}%</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2024-08-29T14:16:15.265897" elapsed="0.000014"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${disk_usage} &lt; ${THRESHOLD_DISK}</arg>
+<arg>msg=Disk usage is too high: ${disk_usage}%</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="NOT RUN" start="2024-08-29T14:16:15.265977" elapsed="0.000013"/>
+</kw>
+<doc>Ensure Disk usage is below the defined threshold.</doc>
+<status status="FAIL" start="2024-08-29T14:16:15.265199" elapsed="0.000895">OSError</status>
+</test>
+<status status="FAIL" start="2024-08-29T14:16:15.189335" elapsed="0.077069"/>
+</suite>
+<statistics>
+<total>
+<stat pass="0" fail="3" skip="0">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat pass="0" fail="3" skip="0" id="s1" name="Rpi Resources">Rpi Resources</stat>
+</suite>
+</statistics>
+<errors>
+<msg time="2024-08-29T14:16:15.263033" level="ERROR">JSON file: /root/snap/semaphore/common/repositories/metrics.json not found</msg>
+<msg time="2024-08-29T14:16:15.264386" level="ERROR">JSON file: /root/snap/semaphore/common/repositories/metrics.json not found</msg>
+<msg time="2024-08-29T14:16:15.265548" level="ERROR">JSON file: /root/snap/semaphore/common/repositories/metrics.json not found</msg>
+</errors>
+</robot>
