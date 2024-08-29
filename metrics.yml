@@ -28,7 +28,7 @@
             "disk_usage": "{{ disk_usage.stdout }}"
           }
         dest: /tmp/metrics.json
-        mode: '0t44'
+        mode: '0744'
 
 - name: Execute Robot Framework Test in Remote environment
   hosts: manila-john
