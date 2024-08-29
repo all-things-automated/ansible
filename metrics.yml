@@ -56,7 +56,6 @@
       args:
         chdir: /tmp
       register: robot_output
-      delegate_to: manila-john
 
     - name: Display Robot Framework Result
       ansible.builtin.debug:
