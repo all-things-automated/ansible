@@ -39,22 +39,16 @@
   tasks:
     - name: Copy Robot Framework Test to Remote Host
       ansible.builtin.copy:
-        src: /media/ewilson/Repositories/ansible/rpi_resources.robot
+        src: rpi_resources.robot
         dest: /tmp/rpi_resources.robot
         remote_src: false
         mode: '0744'
-      
+      delegate_to: localhost
+
     - name: Save metrics to File
       ansible.builtin.copy:
         content: "{{ metrics }}"
         dest: /tmp/metrics.json
-        mode: '0744'
-
-    - name: Copy Robot Framework Test to Remote Host
-      ansible.builtin.copy:
-        src: /media/ewilson/Repositories/ansible/rpi_resources.robot
-        dest: /tmp/rpi_resources.robot
-        remote_src: false
         mode: '0744'
 
     - name: Execute Robot Framework Test
