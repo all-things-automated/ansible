@@ -2,7 +2,7 @@
   hosts: rick-prime
   gather_facts: true
   vars:
-    ansible_user: rsanchez
+    ansible_user: adminuser
 
   tasks:
     - name: Collect Resource Usage for Raspberry Pi
@@ -33,6 +33,8 @@
 - name: Execute Robot Framework Test in Remote environment
   hosts: manila-john
   gather_facts: false
+  vars:
+    ansible_user: adminuser
 
   tasks:
     - name: Copy metrics file from rick-prime to manila-john
@@ -41,6 +43,8 @@
         dest: /tmp/metrics.json
         flat: true
       delegate_to: rick-prime
+      vars:
+        ansible_user: rsanchez
 
     - name: Copy Robot Framework Test to Remote Host
       ansible.builtin.copy:
