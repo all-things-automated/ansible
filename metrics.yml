@@ -56,6 +56,7 @@
   hosts: manila-john
   gather_facts: false
   become: true
+  become_user: ewilson
   vars:
     ansible_user: ewilson
 
