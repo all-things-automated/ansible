@@ -38,7 +38,7 @@
     - name: Copy Robot Framework Test to Remote Host
       ansible.builtin.copy:
         src: rpi_resources.robot
-        dest: /media/ewilson/development
+        dest: /tmp/
         mode: '0744'
 
     - name: Save metrics to File
