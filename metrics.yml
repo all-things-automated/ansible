@@ -20,32 +20,60 @@
           ansible.builtin.shell: "df -h / | grep / | awk '{ print $5 }' | sed 's/%//g'"
           register: disk_usage
 
-    - name: Save metrics to file
-      ansible.builtin.copy:
+    - name: Save metrics to Variable
+      ansible.builtin.debug:
         content: |
           {
             "cpu_usage": "{{ cpu_usage.stdout }}",
             "mem_usage": "{{ mem_usage.stdout }}",
             "disk_usage": "{{ disk_usage.stdout }}"
           }
+      register: metrics
+
+    - name: Save metrics to File
+      ansible.builtin.copy:
+        content: "{{ metrics }}"
         dest: /tmp/metrics.json
+
+- name: Execute Robot Framework Test in Remote environment
+  hosts: manila-john
+  gather_facts: false
+  vars:
+    ansible_user: "{{ ansible_user }}"
+
+  tasks:
+    - name: Copy Robot Framework Test to Remote Host
+      ansible.builtin.copy:
+        src: /media/ewilson/Repositories/ansible/rpi_resources.robot
+        dest: /tmp/rpi_resources.robot
         remote_src: false
         mode: '0744'
-      delegate_to: localhost
+      
+    - name: Save metrics to File
+      ansible.builtin.copy:
+        content: "{{ metrics }}"
+        dest: /tmp/metrics.json
+
+    - name: Copy Robot Framework Test to Remote Host
+      ansible.builtin.copy:
+        src: /media/ewilson/Repositories/ansible/rpi_resources.robot
+        dest: /tmp/rpi_resources.robot
+        remote_src: false
+        mode: '0744'
 
     - name: Execute Robot Framework Test
-      ansible.builtin.shell: "robot -d /tmp/robot_results /media/ewilson/Repositories/ansible/rpi_resources.robot"
+      ansible.builtin.shell: "robot -d /tmp/robot_results /tmp/rpi_resources.robot"
       args:
         chdir: /tmp
       register: robot_output
-      delegate_to: localhost
+      delegate_to: manila-john
 
     - name: Display Robot Framework Result
       ansible.builtin.debug:
-        var: robot_output
+        var: robot_output.stdout_lines
 
     - name: Execute Robot Framework Test
-      ansible.builtin.shell: "robot -d /tmp/robot_results /media/ewilson/Repositories/ansible/rpi_resources.robot"
+      ansible.builtin.shell: "robot -d /tmp/robot_results /tmp/rpi_resources.robot"
       args:
         chdir: /tmp
       register: robot_output
