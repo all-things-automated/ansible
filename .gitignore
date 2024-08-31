@@ -6,8 +6,10 @@ Thumbs.db
 *.swp
 *.swo
 *.bak
-*/vault
+vault*/
 inventory/*
+vars/*
+*/vault*
 
 # Ignore compiled binaries
 *.exe
