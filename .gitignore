@@ -6,6 +6,7 @@ Thumbs.db
 *.swp
 *.swo
 *.bak
+*/vault*
 
 # Ignore compiled binaries
 *.exe
@@ -42,3 +43,6 @@ config.ini
 # Ignore .vscode files
 .vscode
 .secrets
+vars/* 
+*/vault*
+vault/*
