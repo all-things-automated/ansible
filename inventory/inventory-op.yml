@@ -2,5 +2,3 @@ all:
   hosts:    
     rick-prime:
     manila-john:
-    semaphoreui-ansible:
-    k8s-test:

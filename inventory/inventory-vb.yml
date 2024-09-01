@@ -1,6 +1,6 @@
 all:
   hosts:
     semaphoreui-ansible:
-    k8s-test:
+    ew-semaui-p1:
     
   

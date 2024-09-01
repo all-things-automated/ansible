@@ -1,0 +1,23 @@
+---
+- name: Configure Ansible User for all hosts
+  hosts: ew-semaui-p1
+  gather_facts: false
+  become: true
+  vars:
+    ansible_user: semaphore
+    ansible_users:
+      rsanchez: "1qw21qw2!QW@!QW@"
+      adminuser: "2we32we3@WE#@WE#"
+      morty: "3er43er4#ER$#ER$"
+
+
+  tasks:
+    - name: Add ansible user
+      ansible.builtin.user:
+        name: "{{ item.key }}"
+        state: present
+        groups: sudo
+        append: true
+        password: "{{ item.value | password_hash('sha512') }}"
+      with_dict: "{{ ansible_users }}"
+      when: ansible_users is defined
