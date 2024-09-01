@@ -10,7 +10,10 @@ vault*/
 inventory/*
 vars/*
 */vault*
-
+.config/*
+group_vars/*
+vars/*  
+host_vars/*
 # Ignore compiled binaries
 *.exe
 *.dll
