@@ -1,6 +1,6 @@
 all:
   hosts:
-    semaphoreui-ansible:
-    ew-semaui-p1:
+      ew-semaui-p1:
+        ansible_user: semaphore
     
   
