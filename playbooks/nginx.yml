@@ -1,0 +1,53 @@
+---
+- name:
+  hosts: ew-semaui-p1
+  gather_facts: true
+  become: true
+  vars:
+    ansible_user: semaphore
+    nginx_server_name: http://ansible.semaphore.com
+
+  tasks:
+    # - name: Update apt cache
+    #   ansible.builtin.apt:
+    #     update_cache: true
+    #   register: update_cache_result
+
+    # - name: Install Nginx and Vim
+    #   ansible.builtin.apt:
+    #     name: "{{ item }}"
+    #     state: present
+    #   with_items:
+    #     - nginx
+    #     - vim
+    #   register: nginx_install
+
+    # - name: Start Nginx and enable systemctl
+    #   ansible.builtin.service:
+    #     name: nginx
+    #     state: started
+    #     enabled: true
+    #   register: nginx_service
+
+    - name: Set semaphore_ip variable from fact
+      ansible.builtin.set_fact:
+        semaphore_ip: "{{ ansible_default_ipv4.address }}"
+      delegate_to: localhost
+
+    - name: Deploy Nginx configuration for Semaphore
+      ansible.builtin.template:
+        src: templates/nginx_semaphore.conf.j2
+        dest: semaphore.conf
+        mode: '0744'
+
+    # - name: Ensure Nginx configuration is enabled
+    #   ansible.builtin.command: nginx -t && ln -s /etc/nginx/sites-available/semaphore /etc/nginx/sites-enabled/semaphore creates=/etc/nginx/sites-enabled/semaphore
+      
+    #   notify:
+    #     - Reload Nginx
+
+  # handlers:
+  #   - name: Reload Nginx
+  #     service:
+  #       name: nginx
+  #       state: reloaded

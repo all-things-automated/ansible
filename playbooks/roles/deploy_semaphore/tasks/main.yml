@@ -1,50 +1,54 @@
 ---
 # tasks file for deploy_semaphore
-- name: Update apt cache
-  ansible.builtin.apt:
-    update_cache: true
+# - name: Update apt cache
+#   ansible.builtin.apt:
+#     update_cache: true
 
 - name: Install required packages
   ansible.builtin.apt:
     name:
-      - git
+      - certbot
       - curl
-      - wget
-      - software-properties-common
+      - git
+      - nginx
+      - python-certbot-nginx
       - python3
       - python3-pip
+      - software-properties-common
+      - vim
+      - wget
     state: present
 
-- name: Add Ansible PPA
-  ansible.builtin.apt_repository:
-    repo: ppa:ansible/ansible
+# - name: Add Ansible PPA
+#   ansible.builtin.apt_repository:
+#     repo: ppa:ansible/ansible
 
-- name: Install Ansible
-  ansible.builtin.apt:
-    name: ansible
-    state: present
+# - name: Install Ansible
+#   ansible.builtin.apt:
+#     name: ansible
+#     state: present
 
-- name: Download and install MariaDB repo setup
-  ansible.builtin.get_url:
-    url: https://downloads.mariadb.com/MariaDB/mariadb_repo_setup
-    dest: /tmp/mariadb_repo_setup
-    mode: '0755'
+# - name: Download and install MariaDB repo setup
+#   ansible.builtin.get_url:
+#     url: https://downloads.mariadb.com/MariaDB/mariadb_repo_setup
+#     dest: /tmp/mariadb_repo_setup
+#     mode: '0755'
 
-- name: Run MariaDB repo setup
-  ansible.builtin.script:
-    cmd: /tmp/mariadb_repo_setup
-    creates: /etc/apt/sources.list.d/mariadb.list
+# - name: Run MariaDB repo setup
+#   ansible.builtin.script:
+#     cmd: /tmp/mariadb_repo_setup
+#     creates: /etc/apt/sources.list.d/mariadb.list
 
-- name: Install MariaDB server and client
-  ansible.builtin.apt:
-    name:
-      - mariadb-server
-      - mariadb-client
-    state: present
+# - name: Install MariaDB server and client
+#   ansible.builtin.apt:
+#     name:
+#       - mariadb-server
+#       - mariadb-client
+#     state: present
 
-- name: Install MySQL pip package
-  ansible.builtin.pip:
-    name: PyMySQL
+# - name: Install MySQL pip package
+#   ansible.builtin.pip:
+#     name: PyMySQL
 
 # - name: Secure MariaDB installation
 #   community.mysql.mysql_user:
@@ -80,28 +84,66 @@
 #     state: import
 #     target: /etc/mysql/mariadb.conf.d/50-server.cnf
 
-- name: Get Semaphore latest version
-  ansible.builtin.uri:
-    url: https://api.github.com/repos/ansible-semaphore/semaphore/releases/latest
-    return_content: true
-  register: semaphore_release
+# - name: Get Semaphore latest version
+#   ansible.builtin.uri:
+#     url: https://api.github.com/repos/ansible-semaphore/semaphore/releases/latest
+#     return_content: true
+#   register: semaphore_release
 
-- name: Parse Semaphore version
+# - name: Parse Semaphore version
+#   ansible.builtin.set_fact:
+#     semaphore_version: "{{ semaphore_release.json.tag_name | regex_replace('^v', '') }}"
+
+# - name: Download Semaphore .deb package
+#   ansible.builtin.get_url:
+#     url: "https://github.com/ansible-semaphore/semaphore/releases/download/v{{ semaphore_version }}/semaphore_{{ semaphore_version }}_linux_amd64.deb"
+#     dest: /tmp/semaphore_{{ semaphore_version }}_linux_amd64.deb
+#     mode: '0755'
+
+# - name: Install Semaphore
+#   ansible.builtin.apt:
+#     deb: /tmp/semaphore_{{ semaphore_version }}_linux_amd64.deb
+
+# - name: Check Semaphore binary in PATH
+#   ansible.builtin.command: which semaphore
+#   register: semaphore_path
+#   changed_when: false
+#   failed_when: "'/usr/bin/semaphore' not in semaphore_path.stdout"
+
+- name: Set semaphore_ip variable from fact
   ansible.builtin.set_fact:
-    semaphore_version: "{{ semaphore_release.json.tag_name | regex_replace('^v', '') }}"
+    semaphore_ip: "{{ ansible_default_ipv4.address }}"
 
-- name: Download Semaphore .deb package
-  ansible.builtin.get_url:
-    url: "https://github.com/ansible-semaphore/semaphore/releases/download/v{{ semaphore_version }}/semaphore_{{ semaphore_version }}_linux_amd64.deb"
-    dest: /tmp/semaphore_{{ semaphore_version }}_linux_amd64.deb
-    mode: '0755'
+# - name: Build Semaphore configuration
+#   ansible.builtin.template:
+#     src: semaphore_config.json.j2
+#     dest: /tmp/config.json
+#     mode: '0744'
 
-- name: Install Semaphore
-  ansible.builtin.apt:
-    deb: /tmp/semaphore_{{ semaphore_version }}_linux_amd64.deb
+- name: Createn Nginx configuration for Semaphore
+  ansible.builtin.template:
+    src: nginx_semaphore.conf.j2
+    dest: /etc/nginx/conf.d/semaphore.conf
+    mode: '0744'
 
-- name: Check Semaphore binary in PATH
-  ansible.builtin.command: which semaphore
-  register: semaphore_path
-  changed_when: false
-  failed_when: "'/usr/bin/semaphore' not in semaphore_path.stdout"
+- name: Ensure Nginx configuration is enabled
+  ansible.builtin.command: nginx -t
+  register: nginx_test
+
+- name: Debug Nginx test
+  ansible.builtin.debug:
+    var: nginx_test.stderr_lines
+  when: "{{ [warn] in nginx_test.stderr_lines }}"
+
+- name: Reload Nginx
+  ansible.builtin.service:
+    name: nginx
+    state: reloaded
+
+- name: Restart Semaphore
+  ansible.builtin.systemd:
+    name: semaphore
+    state: restarted
+    enabled: true
+
+
