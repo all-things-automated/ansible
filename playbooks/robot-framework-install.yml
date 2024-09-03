@@ -1,0 +1,19 @@
+---
+- name: Install Robot Framework
+  hosts: localhost
+  gather_facts: true
+  become: true
+
+  tasks:
+    - name: Ensure Robot Framework is installed
+      ansible.builtin.pip:
+        name: robotframework
+        state: present
+        executable: /usr/bin/pip3
+
+    - name: Install Robot Framework and JSONLibrary
+      ansible.builtin.pip:
+        name:
+          - robotframework
+          - robotframework-jsonlibrary
+        state: present
