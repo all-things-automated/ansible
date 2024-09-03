@@ -31,7 +31,7 @@
           }
         dest: "/tmp/{{ inventory_hostname }}-metrics.json"
         mode: '0744'
-      delegate_to: manila-john
+      delegate_to: localhost
 
     - name: Display metrics
       ansible.builtin.debug:
@@ -42,24 +42,21 @@
         content: "{{ metrics | to_nice_json }}"
         dest: "/tmp/robot/{{ inventory_hostname }}-metrics.json"
         mode: '0744'
-      delegate_to: manila-john
+      delegate_to: localhost
 
     - name: Generate Robot Framework Test Cases
       ansible.builtin.template:
         src: rpi_resources.robot.j2
         dest: "/tmp/robot/{{ inventory_hostname }}-rpi_resources.robot"
         mode: '0744'
-      delegate_to: manila-john
+      delegate_to: localhost
       register: template_result
 
 
 - name: Execute Robot Framework Test in Remote environment
-  hosts: manila-john
+  hosts: localhost
   gather_facts: false
   become: true
-  become_user: ewilson
-  vars:
-    ansible_user: ewilson
 
   tasks:
     - name: Ensure Robot Framework is installed
@@ -75,7 +72,7 @@
           - robotframework-jsonlibrary
         state: present
 
-    - name: Copy robo-test.py to manila-john
+    - name: Copy robo-test.py to localhost
       ansible.builtin.copy:
         src: robo-test.py
         dest: /tmp/
