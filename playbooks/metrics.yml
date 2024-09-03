@@ -23,7 +23,7 @@
 
     - name: Save metrics to JSON file
       ansible.builtin.set_fact:
-        metrics: 
+        metrics:
           {
             "cpu_usage": "{{ cpu_usage.stdout }}",
             "mem_usage": "{{ mem_usage.stdout }}",
@@ -33,7 +33,8 @@
         mode: '0744'
       delegate_to: manila-john
 
-    - debug:
+    - name: Display metrics
+      ansible.builtin.debug:
         var: metrics
 
     - name: Make JSON file

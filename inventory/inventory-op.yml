@@ -1,4 +1,4 @@
 all:
   hosts:    
-    ew-jerricky-p1:
+    ew-hole-p1:
       ansible_user: adminuser
