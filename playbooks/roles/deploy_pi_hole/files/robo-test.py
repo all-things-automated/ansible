@@ -6,7 +6,7 @@ import os
 
 def run_robot_tests():
     # Define the absolute path to the robot executable
-    robot_executable = '/usr/local/bin/robot'
+    robot_executable = '/home/ewilson/.local/bin/robot'
     
     # Define the pattern to match .robot files
     robot_pattern = '*rpi_resources.robot'
