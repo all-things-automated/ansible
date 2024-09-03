@@ -58,7 +58,7 @@
 
     - name: Generate Robot Framework Test Cases
       ansible.builtin.template:
-        src: rpi_resources.robot.j2
+        src: ../templates/rpi_resources.robot.j2
         dest: "/tmp/robot/{{ inventory_hostname }}-rpi_resources.robot"
         mode: '0744'
       delegate_to: localhost
