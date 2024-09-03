@@ -37,6 +37,18 @@
       ansible.builtin.debug:
         var: metrics
 
+    - name: Create /tmp/robot directory for Robot Tests
+      ansible.builtin.file:
+        path: /tmp/robot
+        state: directory
+        mode: '0744'
+      delegate_to: localhost
+      register: file_result
+
+    - name: Display file creation result
+      ansible.builtin.debug:
+        var: file_result
+
     - name: Make JSON file
       ansible.builtin.copy:
         content: "{{ metrics | to_nice_json }}"
@@ -97,4 +109,3 @@
     - name: Display Cleanup Result
       ansible.builtin.debug:
         var: cleanup_result
-
