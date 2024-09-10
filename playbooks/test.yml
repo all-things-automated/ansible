@@ -1,0 +1,38 @@
+- name: Manage network adapters
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Gather network adapter settings
+      # Replace this with your actual module/task that gathers network settings
+      ansible.builtin.debug:
+        msg: |
+          {% set network_settings = [
+            {
+              "label": "Network adapter 1",
+              "network_name": "net_vlan1"
+            },
+            {
+              "label": "Network adapter 2",
+              "network_name": "net_vlan2"
+            }
+          ] %}
+          {{ network_settings | to_nice_yaml }}
+      register: gathered_network_settings
+
+    - ansible.builtin.debug:
+        var: gathered_network_settings
+
+    - set_fact:
+        network_settings_parsed: "{{ gathered_network_settings.msg | from_yaml }}"
+
+    - name: Set facts for each adapter dynamically
+      set_fact:
+        "{{ item.label | replace(' ', '_') | lower }}": "{{ item.network_name }}"
+      loop: "{{ network_settings_parsed }}"
+
+    - ansible.builtin.debug:
+        var: network_settings_parsed
+
+    - ansible.builtin.debug:
+        msg: "Adapter {{ item.label }} has network name {{ item.network_name }}"
+      loop: "{{ network_settings_parsed }}"
