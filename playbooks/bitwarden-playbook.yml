@@ -1,0 +1,42 @@
+---
+- name: Retrieve BitWarden Secrets
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Get Bitwarden records named 'ansible_user'
+      ansible.builtin.debug:
+        msg: >-
+          {{ lookup('community.general.bitwarden', 'ansibull', field='password') }}
+      register: bw_pass
+      delegate_to: localhost
+
+    - name: Set username and password variables
+      set_fact:
+        adminuser: "{{ item.key }}"
+        adminpass: "{{ item.value }}"
+      loop:
+        - { key: 'ansibull', value: "{{ bw_pass.msg }}" }
+    
+
+    - name: Print Bitwarden password
+      ansible.builtin.debug:
+        msg: "Username: {{ adminuser }}, Password: {{ adminpass }}"
+      delegate_to: localhost
+
+- name: Run task with Bitwarden credentials
+  hosts: all
+  vars:
+    ansible_user: "{{ adminuser }}"
+    ansible_password: "{{ adminpass }}"
+  tasks:
+    - name: Run sudo command as Bitwarden user
+      ansible.builtin.command:
+        cmd: whoami
+        become: true
+      register: result
+
+    - name: Print result
+      ansible.builtin.debug:
+        msg: "{{ result.stdout }}"
+      delegate_to: localhost
