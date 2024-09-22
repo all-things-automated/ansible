@@ -5,7 +5,7 @@ This Ansible role is designed to deploy Semaphore, an open-source web-based solu
 
 1. **Clone the Semaphore repository:**
   ```sh
-  git clone https://github.com/ansible-semaphore/semaphore.git
+  git clone https://github.com/all-things-automated/ansible.git
   ```
 
 2. **Ensure the inventory is accurate for your environment:**
