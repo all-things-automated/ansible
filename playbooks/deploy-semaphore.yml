@@ -1,11 +1,8 @@
 ---
 - name: Deploy Semaphore
-  hosts: ew-semaui-p1
+  hosts: all
   gather_facts: false
   become: true
-  vars:
-    mariadb_root_password: ""
-
 
   roles:
     - deploy_semaphore

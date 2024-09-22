@@ -34,6 +34,7 @@
   ansible.builtin.script:
     cmd: /tmp/mariadb_repo_setup
     creates: /etc/apt/sources.list.d/mariadb.list
+  
 
 - name: Install MariaDB server and client
   ansible.builtin.apt:
