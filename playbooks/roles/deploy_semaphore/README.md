@@ -1,38 +1,121 @@
-Role Name
-=========
+# Deploy Semaphore Role
 
-A brief description of the role goes here.
+This Ansible role is designed to deploy Semaphore, an open-source web-based solution for Ansible playbooks. Below are the manual steps necessary to configure and start Semaphore.
+## Prerequisites
 
-Requirements
-------------
+1. **Clone the Semaphore repository:**
+  ```sh
+  git clone https://github.com/ansible-semaphore/semaphore.git
+  ```
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+2. **Ensure the inventory is accurate for your environment:**
+  Review and update the `inventory` file in the cloned repository to match your environment settings.
 
-Role Variables
---------------
+3. **Execute the Ansible playbook:**
+  ```sh
+  ansible-playbook -i {{ your_inventory }} deploy-semaphore.yml -u {{ ansible_user }} --ask-pass --ask-become-pass
+  ```
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+## Manual Steps
 
-Dependencies
-------------
+This Ansible role is designed to deploy Semaphore, an open-source web-based solution for Ansible playbooks. Below are the manual steps necessary to configure and start Semaphore.
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+1. **Create Semaphore configurations directory:**
+  ```sh
+  sudo mkdir /etc/semaphore
+  ```
 
-Example Playbook
-----------------
+2. **Copy your configuration file to the created directory:**
+  ```sh
+  sudo cp /root/config.json /etc/semaphore/config.json
+  ```
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+3. **Stop running instances of Semaphore:**
+  ```sh
+  sudo pkill semaphore
+  ```
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+4. **Confirm no Semaphore instances are running:**
+  ```sh
+  ps aux | grep sema
+  ```
 
-License
--------
+5. **Reload the systemd manager configuration:**
+  ```sh
+  sudo systemctl daemon-reload
+  ```
 
-BSD
+6. **Start Semaphore service:**
+  ```sh
+  sudo systemctl start semaphore
+  ```
 
-Author Information
-------------------
+7. **Check the status of Semaphore service:**
+  ```sh
+  systemctl status semaphore
+  ```
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+8. **Enable Semaphore service to start on boot:**
+  ```sh
+  sudo systemctl enable semaphore
+  ```
+
+9. **Verify Semaphore is listening on port 3000:**
+  ```sh
+  sudo ss -tunelp | grep 3000
+  ```
+
+10. **Access Semaphore:**
+  Open your browser and navigate to `https://{{ localhost_IP }}:3000`
+
+Follow these steps to ensure Semaphore is properly configured and running on your system.
+
+1. **Create Semaphore configurations directory:**
+  ```sh
+  sudo mkdir /etc/semaphore
+  ```
+
+2. **Copy your configuration file to the created directory:**
+  ```sh
+  sudo cp /root/config.json /etc/semaphore/config.json
+  ```
+
+3. **Stop running instances of Semaphore:**
+  ```sh
+  sudo pkill semaphore
+  ```
+
+4. **Confirm no Semaphore instances are running:**
+  ```sh
+  ps aux | grep sema
+  ```
+
+5. **Reload the systemd manager configuration:**
+  ```sh
+  sudo systemctl daemon-reload
+  ```
+
+6. **Start Semaphore service:**
+  ```sh
+  sudo systemctl start semaphore
+  ```
+
+7. **Check the status of Semaphore service:**
+  ```sh
+  systemctl status semaphore
+  ```
+
+8. **Enable Semaphore service to start on boot:**
+  ```sh
+  sudo systemctl enable semaphore
+  ```
+
+9. **Verify Semaphore is listening on port 3000:**
+  ```sh
+  sudo ss -tunelp | grep 3000
+  ```
+
+10. **Access Semaphore:**
+  Open your browser and navigate to `https://{{ localhost_IP }}:3000`
+
+Follow these steps to ensure Semaphore is properly configured and running on your system.
