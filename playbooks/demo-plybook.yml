@@ -22,9 +22,9 @@
       ansible.builtin.file:
         path: "/tmp/alpine_test_file"
         state: touch
-      when: ansible_facts['ansible_distribution'] == "Alpine"
+      when: ansible_facts['distribution'] == "Alpine"
 
     - name: "Print a message if running on Alpine"
       ansible.builtin.debug:
         msg: "Alpine-specific tasks have been executed!"
-      when: ansible_facts['ansible_distribution'] == "Alpine"
+      when: ansible_facts['distribution'] == "Alpine"
