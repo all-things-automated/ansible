@@ -1,7 +1,7 @@
 - name: Metrics RPi
   hosts: localhost
-  gather_facts: true
-  become: true
+  gather_facts: false
+  become: false 
 
   tasks:
     - name: Collect Resource Usage for Raspberry Pi
