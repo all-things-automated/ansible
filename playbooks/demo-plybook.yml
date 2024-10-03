@@ -10,7 +10,7 @@
     - name: "Check if the distribution is Alpine"
       ansible.builtin.debug:
         msg: "This system is running Alpine Linux!"
-      when: ansible_facts['ansible_distribution'] == "Alpine"
+      when: ansible_facts['distribution'] == "Alpine"
 
     - name: "Install package only on Alpine"
       ansible.builtin.package:
