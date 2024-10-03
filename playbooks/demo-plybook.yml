@@ -1,4 +1,4 @@
----
+--- 
 - name: "Run tasks only if the distribution is Alpine Linux"
   hosts: localhost
   gather_facts: true  # Ensure facts are gathered
