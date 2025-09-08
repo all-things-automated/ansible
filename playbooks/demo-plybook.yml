@@ -16,7 +16,7 @@
       ansible.builtin.package:
         name: "curl"
         state: present
-      when: ansible_facts['ansible_distribution'] == "Alpine"
+      when: ansible_facts['distribution'] == "Alpine"
 
     - name: "Create a test file only on Alpine"
       ansible.builtin.file:
